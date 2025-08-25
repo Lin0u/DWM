@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mis Pokémon favoritos</title>
+    <!-- Bootstrap y FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body {
+            background: #121212;
+            color: #eaeaea;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, #e62129 0%, #bf1a20 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .pokemon-card {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            opacity: 1;
+            transform: scale(1);
+            height: auto;
+            margin-bottom: 1.5rem;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .accent {
+            background: #CFDDE6;
+        }
+        .rank {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .sprite {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            border-radius: .5rem;
+            transition: transform 0.3s ease;
+        }
+        .sprite:hover {
+            transform: scale(1.05);
+        }
+        .filter-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .type-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Colores específicos para cada Pokémon */
+        .dragonite-card {
+            background: linear-gradient(to bottom, #ffcc00 0%, #ffcc00 40%, #1b1d22 40%, #1b1d22 100%);
+        }
+        .dragonite-rank {
+            background: linear-gradient(135deg, #ffcc00 0%, #e6b800 100%);
+        }
+        .pikachu-card {
+            background: linear-gradient(to bottom, #ffde00 0%, #ffde00 40%, #1b1d22 40%, #1b1d22 100%);
+        }
+        .pikachu-rank {
+            background: linear-gradient(135deg, #ffde00 0%, #e6c700 100%);
+        }
+        .mew-card {
+            background: linear-gradient(to bottom, #f8c8dc 0%, #f8c8dc 40%, #1b1d22 40%, #1b1d22 100%);
+        }
+        .mew-rank {
+            background: linear-gradient(135deg, #f8c8dc 0%, #e6b4c9 100%);
+        }
+        .greninja-card {
+            background: linear-gradient(to bottom, #2c3e50 0%, #2c3e50 40%, #1b1d22 40%, #1b1d22 100%);
+        }
+        .greninja-rank {
+            background: linear-gradient(135deg, #2c3e50 0%, #1e2a36 100%);
+        }
+        .charizard-card {
+            background: linear-gradient(to bottom, #e67e22 0%, #e67e22 40%, #1b1d22 40%, #1b1d22 100%);
+        }
+        .charizard-rank {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        }
+        
+        /* Colores para los tipos */
+        .tipo-electrico { background-color: #f8d030; color: #000; }
+        .tipo-dragon { background-color: #7038f8; color: #fff; }
+        .tipo-volador { background-color: #a890f0; color: #000; }
+        .tipo-psiquico { background-color: #f85888; color: #fff; }
+        .tipo-agua { background-color: #6890f0; color: #fff; }
+        .tipo-siniestro { background-color: #705848; color: #fff; }
+        .tipo-fuego { background-color: #f08030; color: #000; }
+        
+        .container {
+            max-width: 800px;
+        }
+        h1 {
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .select-type {
+            max-width: 250px;
+            background: #2c2c2c;
+            color: #fff;
+            border: 2px solid #e62129;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+        .select-type:focus {
+            box-shadow: 0 0 0 0.25rem rgba(230, 33, 41, 0.25);
+        }
+        .current-type {
+            font-weight: bold;
+            color: #e62129 !important;
+        }
+        .pokemon-name {
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .description {
+            color: #b8b8b8 !important;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body class="py-4">
+    <div class="container">
+        <!-- Encabezado -->
+        <header class="header mb-4">
+            <h1 class="m-0">
+                <i class="fa-solid fa-dragon"></i> Mis Pokémon favoritos
+            </h1>
+            <small class="text-light">Top 5 (ordenados de mejor a peor)</small>
+        </header>
+
+        <!-- Filtro por tipo -->
+        <div class="filter-container">
+            <label for="tipo" class="form-label mb-2">
+                <i class="fa-solid fa-filter"></i> Filtrar por tipo
+            </label>
+            <select id="tipo" class="form-select select-type">
+                <option value="todos">Todos los tipos</option>
+                <option value="psiquico">Psíquico</option>
+                <option value="electrico">Eléctrico</option>
+                <option value="agua">Agua</option>
+                <option value="siniestro">Siniestro</option>
+                <option value="dragon">Dragón</option>
+                <option value="volador">Volador</option>
+                <option value="fuego">Fuego</option>
+            </select>
+            <small class="text-secondary d-block mt-2">
+                Tipo seleccionado: <span id="tipo-actual" class="current-type">Todos</span>
+            </small>
+        </div>
+
+        <!-- Lista Pokémon -->
+        <div class="row" id="lista-pokemon">
+            <!-- Dragonite - Dragón/Volador -->
+            <div class="col-12">
+                <article class="pokemon-card p-3 d-flex align-items-start gap-3 dragonite-card" data-tipos="dragon,volador">
+                    <span class="rank dragonite-rank">1</span>
+                    <div class="flex-grow-1">
+                        <h5 class="pokemon-name m-0">Dragonite</h5>
+                        <div class="my-2">
+                            <span class="type-badge tipo-dragon">Dragón</span>
+                            <span class="type-badge tipo-volador">Volador</span>
+                        </div>
+                        <p class="description mb-2">Se dice que hace su hogar en algún lugar del mar. Guía a las tripulaciones de los naufragios a la orilla.</p>
+                        <img class="sprite" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" alt="Dragonite">
+                    </div>
+                </article>
+            </div>
+
+            <!-- Pikachu - Eléctrico -->
+            <div class="col-12">
+                <article class="pokemon-card p-3 d-flex align-items-start gap-3 pikachu-card" data-tipos="electrico">
+                    <span class="rank pikachu-rank">2</span>
+                    <div class="flex-grow-1">
+                        <h5 class="pokemon-name m-0">Pikachu</h5>
+                        <div class="my-2">
+                            <span class="type-badge tipo-electrico">Eléctrico</span>
+                        </div>
+                        <p class="description mb-2">Ocasionalmente utiliza una descarga eléctrica para recargar a un Pikachu compañero que se encuentra en un estado debilitado.</p>
+                        <img class="sprite" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" alt="Pikachu">
+                    </div>
+                </article>
+            </div>
+
+            <!-- Mew - Psíquico -->
+            <div class="col-12">
+                <article class="pokemon-card p-3 d-flex align-items-start gap-3 mew-card" data-tipos="psiquico">
+                    <span class="rank mew-rank">3</span>
+                    <div class="flex-grow-1">
+                        <h5 class="pokemon-name m-0">Mew</h5>
+                        <div class="my-2">
+                            <span class="type-badge tipo-psiquico">Psíquico</span>
+                        </div>
+                        <p class="description mb-2">Debido a que puede utilizar todo tipo de movimientos, muchos científicos creen que Mew es el ancestro de los Pokémon.</p>
+                        <img class="sprite" src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/151.png" alt="Mew">
+                    </div>
+                </article>
+            </div>
+
+            <!-- Greninja - Agua/Siniestro -->
+            <div class="col-12">
+                <article class="pokemon-card p-3 d-flex align-items-start gap-3 greninja-card" data-tipos="agua,siniestro">
+                    <span class="rank greninja-rank">4</span>
+                    <div class="flex-grow-1">
+                        <h5 class="pokemon-name m-0">Greninja</h5>
+                        <div class="my-2">
+                            <span class="type-badge tipo-agua">Agua</span>
+                            <span class="type-badge tipo-siniestro">Siniestro</span>
+                        </div>
+                        <p class="description mb-2">Puede detectar enemigos fuera de su campo visual al captar los movimientos del aire con su larga lengua enroscada alrededor del cuello.</p>
+                        <img class="sprite" src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/658.png" alt="greninja">
+                    </div>
+                </article>
+            </div>
+
+            <!-- Charizard - Fuego/Volador -->
+            <div class="col-12">
+                <article class="pokemon-card p-3 d-flex align-items-start gap-3 charizard-card" data-tipos="fuego,volador">
+                    <span class="rank charizard-rank">5</span>
+                    <div class="flex-grow-1">
+                        <h5 class="pokemon-name m-0">Charizard</h5>
+                        <div class="my-2">
+                            <span class="type-badge tipo-fuego">Fuego</span>
+                            <span class="type-badge tipo-volador">Volador</span>
+                        </div>
+                        <p class="description mb-2">Se dice que el fuego de Charizard arde más caliente si ha experimentado batallas duras.</p>
+                        <img class="sprite" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" alt="Charizard">
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para el filtrado -->
+    <script>
+        const tipoSelect = document.getElementById('tipo');
+        const tipoActual = document.getElementById('tipo-actual');
+        const pokemonContainers = document.querySelectorAll('#lista-pokemon > .col-12');
+        
+        // Mostrar el tipo seleccionado
+        tipoSelect.addEventListener('change', () => {
+            const tipoSeleccionado = tipoSelect.value;
+            tipoActual.textContent = tipoSelect.options[tipoSelect.selectedIndex].text;
+            
+            // Filtrar los Pokémon
+            pokemonContainers.forEach(container => {
+                const pokemon = container.querySelector('.pokemon-card');
+                const tipos = pokemon.getAttribute('data-tipos').split(',');
+                
+                if (tipoSeleccionado === 'todos' || tipos.includes(tipoSeleccionado)) {
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
